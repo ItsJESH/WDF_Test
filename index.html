@@ -3,9 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Surprise Test</title>
+    <style>
+        /* General Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container to hold everything */
+.container {
+    width: 80%;
+    max-width: 1200px;
+    text-align: center;
+}
+
+/* Heading Styling */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+/* Card Container with Flexbox for Row Layout */
+.cards-container {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Card Styling */
+.card {
+    background-color: #00bfae;
+    color: white;
+    padding: 20px;
+    width: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    text-align: center;
+}
+
+/* Card Hover Effect */
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* Link Styling inside the Cards */
+.card a {
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #008f7d;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
+    margin-top: 10px;
+}
+
+/* Link Hover Effect */
+.card a:hover {
+    background-color: #006d59;
+    transform: scale(1.05);
+}
+
+/* Card Title */
+.card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+    </style>
 </head>
 <body>
-    <a href="./Q1.html" target="_blank">Calculator</a>
+    <div class="container">
+        <h1>Surprise Test</h1>
+        <div class="cards-container">
+            <div class="card">
+                <h2>Simple Calculator</h2>
+                <a href="./Q1.html" target="_blank">Check</a>
+            </div>
+            <div class="card">
+                <h2>Memory Card Game</h2>
+                <a href="./Q2.html" target="_blank">Check</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

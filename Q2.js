@@ -1,114 +1,146 @@
-const cardGrid = document.getElementById("card-grid");
-const score1Element = document.getElementById("score1");
-const score2Element = document.getElementById("score2");
-const turnInfo = document.getElementById("turn");
-const winMessage = document.getElementById("win-message");
-const winnerElement = document.getElementById("winner");
-
-let cards = [
-    { id: 1, image: "./cards/i1.png" },
-    { id: 2, image: "images/f1_2.png" },
-    { id: 3, image: "images/f1_3.png" },
-    { id: 4, image: "images/f1_4.png" },
-    { id: 5, image: "images/f1_5.png" },
-    { id: 6, image: "images/f1_6.png" },
-    { id: 7, image: "images/f1_7.png" },
-    { id: 8, image: "images/f1_8.png" },
-    { id: 1, image: "./cards/i1.png" },
-    { id: 2, image: "images/f1_2.png" },
-    { id: 3, image: "images/f1_3.png" },
-    { id: 4, image: "images/f1_4.png" },
-    { id: 5, image: "images/f1_5.png" },
-    { id: 6, image: "images/f1_6.png" },
-    { id: 7, image: "images/f1_7.png" },
-    { id: 8, image: "images/f1_8.png" }
-];
-
-let flippedCards = [];
-let matchedCards = [];
-let currentPlayer = 1;
-let score1 = 0;
-let score2 = 0;
-
-function shuffle(cards) {
-    for (let i = cards.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [cards[i], cards[j]] = [cards[j], cards[i]];
-    }
+const selectors = {
+  boardContainer: document.querySelector('.board-container'),
+  board: document.querySelector('.board'),
+  moves: document.querySelector('.moves'),
+  timer: document.querySelector('.timer'),
+  start: document.querySelector('button'),
+  win: document.querySelector('.win')
 }
 
-function createCardElement(card) {
-    const cardElement = document.createElement("div");
-    cardElement.classList.add("card");
-    cardElement.dataset.id = card.id;
-
-    const cardImage = document.createElement("img");
-    cardImage.src = card.image;
-    cardImage.alt = card.id;
-
-    cardElement.appendChild(cardImage);
-    cardElement.addEventListener("click", () => flipCard(cardElement));
-    return cardElement;
+const state = {
+  gameStarted: false,
+  flippedCards: 0,
+  totalFlips: 0,
+  totalTime: 0,
+  loop: null
 }
 
-function flipCard(cardElement) {
-    if (flippedCards.length < 2 && !cardElement.classList.contains("flipped")) {
-        cardElement.classList.add("flipped");
-        flippedCards.push(cardElement);
+const shuffle = array => {
+  const clonedArray = [...array]
 
-        if (flippedCards.length === 2) {
-            checkMatch();
-        }
-    }
+  for (let index = clonedArray.length - 1; index > 0; index--) {
+      const randomIndex = Math.floor(Math.random() * (index + 1))
+      const original = clonedArray[index]
+
+      clonedArray[index] = clonedArray[randomIndex]
+      clonedArray[randomIndex] = original
+  }
+
+  return clonedArray
 }
 
-function checkMatch() {
-    const [firstCard, secondCard] = flippedCards;
-    if (firstCard.dataset.id === secondCard.dataset.id) {
-        matchedCards.push(firstCard, secondCard);
-        updateScore();
-        if (matchedCards.length === cards.length) {
-            showWinMessage();
-        }
-        flippedCards = [];
-        currentPlayer = currentPlayer === 1 ? 2 : 1;
-        updateTurnInfo();
-    } else {
-        setTimeout(() => {
-            firstCard.classList.remove("flipped");
-            secondCard.classList.remove("flipped");
-            flippedCards = [];
-            currentPlayer = currentPlayer === 1 ? 2 : 1;
-            updateTurnInfo();
-        }, 1000);
-    }
+const pickRandom = (array, items) => {
+  const clonedArray = [...array]
+  const randomPicks = []
+
+  for (let index = 0; index < items; index++) {
+      const randomIndex = Math.floor(Math.random() * clonedArray.length)
+
+      randomPicks.push(clonedArray[randomIndex])
+      clonedArray.splice(randomIndex, 1)
+  }
+
+  return randomPicks
 }
 
-function updateScore() {
-    if (currentPlayer === 1) {
-        score1 += 10;
-        score1Element.textContent = score1;
-    } else {
-        score2 += 10;
-        score2Element.textContent = score2;
-    }
+const generateGame = () => {
+  const dimensions = selectors.board.getAttribute('data-dimension')
+
+  if (dimensions % 2 !== 0) {
+      throw new Error("The dimension of the board must be an even number.")
+  }
+
+  const emojis = ['🙂', '😎','🤓','😁','🤩','🤑','🤠','😈']
+  const picks = pickRandom(emojis, (dimensions * dimensions) / 2)
+  const items = shuffle([...picks, ...picks])
+  const cards = `
+      <div class="board" style="grid-template-columns: repeat(${dimensions}, auto)">
+          ${items.map(item => `
+              <div class="card">
+                  <div class="card-front"></div>
+                  <div class="card-back">${item}</div>
+              </div>
+          `).join('')}
+     </div>
+  `
+
+  const parser = new DOMParser().parseFromString(cards, 'text/html')
+
+  selectors.board.replaceWith(parser.querySelector('.board'))
 }
 
-function updateTurnInfo() {
-    turnInfo.textContent = `Player ${currentPlayer}'s Turn`;
+const startGame = () => {
+  state.gameStarted = true
+  selectors.start.classList.add('disabled')
+
+  state.loop = setInterval(() => {
+      state.totalTime++
+
+      selectors.moves.innerText = `${state.totalFlips} moves`
+      selectors.timer.innerText = `time: ${state.totalTime} sec`
+  }, 1000)
 }
 
-function showWinMessage() {
-    winMessage.style.display = "block";
-    winnerElement.textContent = score1 > score2 ? "1" : "2";
+const flipBackCards = () => {
+  document.querySelectorAll('.card:not(.matched)').forEach(card => {
+      card.classList.remove('flipped')
+  })
+
+  state.flippedCards = 0
 }
 
-function initializeGame() {
-    shuffle(cards);
-    cards.forEach(card => {
-        const cardElement = createCardElement(card);
-        cardGrid.appendChild(cardElement);
-    });
+const flipCard = card => {
+  state.flippedCards++
+  state.totalFlips++
+
+  if (!state.gameStarted) {
+      startGame()
+  }
+
+  if (state.flippedCards <= 2) {
+      card.classList.add('flipped')
+  }
+
+  if (state.flippedCards === 2) {
+      const flippedCards = document.querySelectorAll('.flipped:not(.matched)')
+
+      if (flippedCards[0].innerText === flippedCards[1].innerText) {
+          flippedCards[0].classList.add('matched')
+          flippedCards[1].classList.add('matched')
+      }
+
+      setTimeout(() => {
+          flipBackCards()
+      }, 1000)
+  }
+
+  if (!document.querySelectorAll('.card:not(.flipped)').length) {
+      setTimeout(() => {
+          selectors.boardContainer.classList.add('flipped')
+          selectors.win.innerHTML = `
+              <span class="win-text">
+                  You won!<br />
+                  with <span class="highlight">${state.totalFlips}</span> moves<br />
+                  under <span class="highlight">${state.totalTime}</span> seconds
+              </span>
+          `
+          clearInterval(state.loop)
+      }, 1000)
+  }
 }
 
-initializeGame();
+const attachEventListeners = () => {
+  document.addEventListener('click', event => {
+      const eventTarget = event.target
+      const eventParent = eventTarget.parentElement
+
+      if (eventTarget.className.includes('card') && !eventParent.className.includes('flipped')) {
+          flipCard(eventParent)
+      } else if (eventTarget.nodeName === 'BUTTON' && !eventTarget.className.includes('disabled')) {
+          startGame()
+      }
+  })
+}
+
+generateGame()
+attachEventListeners()  

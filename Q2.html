@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Card Game - F1 Theme</title>
-    <link rel="stylesheet" href="./Q2.css">
+    <title>Memory Card Game - F1 theme</title>
+
+    <link rel="stylesheet" href="./Q2.css" />
+    <script src="./Q2.js" defer></script>
 </head>
+
 <body>
-    <div class="game-container">
-        <h1>Memory Card Game</h1>
-        <div class="scoreboard">
-            <div>Player 1 Score: <span id="score1">0</span></div>
-            <div>Player 2 Score: <span id="score2">0</span></div>
+    <div class="game">
+        <div class="controls">
+            <button>Start</button>
         </div>
-        <div class="turn-info" id="turn">Player 1's Turn</div>
-        <div id="card-grid" class="card-grid"></div>
-        <div class="win-message" id="win-message">
-            <p>Player <span id="winner"></span> Wins!</p>
+        <div class="board-container">
+            <div class="board" data-dimension="4"></div>
+            <div class="win">You won!</div>
         </div>
     </div>
-    <script src="./Q2.js"></script>
+
 </body>
+
 </html>
